@@ -4,25 +4,30 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.ecommerceappjetpackcompose.dashboard_screens.screens.AddToCartScreen
-import com.example.ecommerceappjetpackcompose.dashboard_screens.screens.ProductDetailsScreen
+import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.AddToCartScreen
+import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.ProductDetailsScreen
 import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.Dashboard
+import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.ThankYouScreen
+import com.example.ecommerceappjetpackcompose.dashboard_screens.viewmodel.SharedViewModel
 
 @Composable
-fun Navigation() {
+fun Navigation(viewModel: SharedViewModel) {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
         startDestination = Screen.HomeScreen.route
     ) {
         composable(Screen.HomeScreen.route) {
-            Dashboard()
+            Dashboard(navController, viewModel)
         }
         composable(Screen.ProductDetailsScreen.route) {
-            ProductDetailsScreen()
+            ProductDetailsScreen(navController, viewModel)
         }
         composable(Screen.AddToCartScreen.route) {
-            AddToCartScreen()
+            AddToCartScreen(navController, viewModel)
+        }
+        composable(Screen.ThankYouScreen.route) {
+            ThankYouScreen(navController, viewModel)
         }
     }
 }

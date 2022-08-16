@@ -1,12 +1,9 @@
-package com.example.ecommerceappjetpackcompose.dashboard_screens.screens
+package com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
@@ -22,15 +19,16 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.ecommerceappjetpackcompose.R
+import com.example.ecommerceappjetpackcompose.dashboard_screens.navigation.Screen
+import com.example.ecommerceappjetpackcompose.dashboard_screens.viewmodel.SharedViewModel
 import com.example.ecommerceappjetpackcompose.ui.theme.*
 
-@Preview(showBackground = true)
 @Composable
-fun AddToCartScreen() {
+fun AddToCartScreen(navController: NavHostController, viewModel: SharedViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -45,7 +43,7 @@ fun AddToCartScreen() {
             Spacer(modifier = Modifier.padding(20.dp))
             CartItemList()
             Spacer(modifier = Modifier.padding(20.dp))
-            NextButtonWithTotalItems()
+            NextButtonWithTotalItems(navController)
         }
     }
 }
@@ -216,7 +214,7 @@ fun ProductCartItems(
 }
 
 @Composable
-fun NextButtonWithTotalItems() {
+fun NextButtonWithTotalItems(navController: NavHostController) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Divider(color = lightGrey, thickness = 2.dp)
         Spacer(modifier = Modifier.padding(8.dp))
@@ -241,6 +239,7 @@ fun NextButtonWithTotalItems() {
 
         Button(
             onClick = {
+                navController.navigate(Screen.ThankYouScreen.route)
             },
             colors = ButtonDefaults.buttonColors(backgroundColor = orange),
             modifier = Modifier
@@ -253,7 +252,7 @@ fun NextButtonWithTotalItems() {
             shape = RoundedCornerShape(14.dp)
         ) {
             Text(
-                text = "Next",
+                text = "Buy",
                 color = white,
                 style = MaterialTheme.typography.button,
                 modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)

@@ -11,19 +11,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.ecommerceappjetpackcompose.R
-import com.example.ecommerceappjetpackcompose.dashboard_screens.screens.AddToCartScreen
-import com.example.ecommerceappjetpackcompose.dashboard_screens.screens.ProductDetailsScreen
+import com.example.ecommerceappjetpackcompose.dashboard_screens.viewmodel.SharedViewModel
 import com.example.ecommerceappjetpackcompose.ui.theme.orange
 
-@Preview(showBackground = true)
 @Composable
-fun Dashboard(
-) {
+fun Dashboard(navController: NavHostController, viewModel: SharedViewModel) {
     val sectionState = remember { mutableStateOf(DashboardSection.Home) }
     val navItems = DashboardSection.values().toList()
+
 
     Scaffold(
         bottomBar = {
@@ -40,9 +38,9 @@ fun Dashboard(
         )
         { section ->
             when (section) {
-                DashboardSection.Home -> HomeScreen()
-                DashboardSection.ShoppingCart -> AddToCartScreen()
-                DashboardSection.CartDetails -> ProductDetailsScreen()
+                DashboardSection.Home -> HomeScreen(navController,viewModel)
+                DashboardSection.ShoppingCart -> AddToCartScreen(navController, viewModel)
+                DashboardSection.CartDetails -> ProductDetailsScreen(navController, viewModel)
             }
         }
     }

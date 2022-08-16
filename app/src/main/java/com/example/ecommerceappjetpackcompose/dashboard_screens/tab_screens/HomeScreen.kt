@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,15 +24,16 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.ecommerceappjetpackcompose.R
+import com.example.ecommerceappjetpackcompose.dashboard_screens.navigation.Screen
+import com.example.ecommerceappjetpackcompose.dashboard_screens.viewmodel.SharedViewModel
 import com.example.ecommerceappjetpackcompose.ui.theme.*
 
-@Preview(showBackground = true)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavHostController, viewModel: SharedViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -43,7 +43,7 @@ fun HomeScreen() {
             Spacer(modifier = Modifier.padding(20.dp))
             ProductCategory()
             Spacer(modifier = Modifier.padding(20.dp))
-            ProductWidget()
+            ProductWidget(navController, viewModel)
         }
     }
 
@@ -149,7 +149,8 @@ fun ProductCategory() {
     val categoryImagesList = listOf<Int>(
         R.drawable.zebmax,
         R.drawable.shoe_thumb_2,
-        R.drawable.watch)
+        R.drawable.watch
+    )
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -164,7 +165,8 @@ fun ProductCategory() {
                     )
             ) {
                 Row(
-                    modifier = Modifier.padding(4.dp)
+                    modifier = Modifier
+                        .padding(4.dp)
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
@@ -203,7 +205,7 @@ data class ProductDetails(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProductWidget() {
+fun ProductWidget(navController: NavHostController, viewModel: SharedViewModel) {
 
     val productDetails = listOf<ProductDetails>(
         ProductDetails(
@@ -243,9 +245,18 @@ fun ProductWidget() {
     LazyVerticalGrid(
         cells = GridCells.Fixed(2),
         content = {
-            itemsIndexed(productDetails) { _,item->
+            itemsIndexed(productDetails) { _, item ->
+
+                var isChecked by remember {
+                    mutableStateOf(false)
+                }
+
                 Card(
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable {
+                            viewModel.selectedProduct = item
+                            navController.navigate(Screen.ProductDetailsScreen.route) }
                         .wrapContentHeight(),
                     shape = RoundedCornerShape(24.dp),
                     elevation = 2.dp
@@ -257,11 +268,17 @@ fun ProductWidget() {
                             .wrapContentHeight()
                             .padding(12.dp)
                     ) {
-                        IconButton(onClick = { }) {
+                        IconButton(onClick = { isChecked = !isChecked }) {
                             Icon(
-                                imageVector = Icons.Outlined.FavoriteBorder,
+                                painter = painterResource(
+                                    id =
+                                    if (isChecked)
+                                        R.drawable.ic_baseline_favorite_24
+                                    else
+                                        R.drawable.ic_baseline_favorite_border_24
+                                ),
                                 contentDescription = "",
-                                tint = lightGrey
+                                tint = if (isChecked) redHeart else lightGrey
                             )
 
                         }

@@ -1,4 +1,4 @@
-package com.example.ecommerceappjetpackcompose.dashboard_screens.screens
+package com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,30 +15,28 @@ import androidx.compose.material.icons.outlined.KeyboardArrowLeft
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester.Companion.createRefs
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavHostController
 import com.example.ecommerceappjetpackcompose.R
+import com.example.ecommerceappjetpackcompose.dashboard_screens.viewmodel.SharedViewModel
 import com.example.ecommerceappjetpackcompose.ui.theme.*
 
-@Preview(showBackground = true)
 @Composable
-fun ProductDetailsScreen() {
+fun ProductDetailsScreen(navController: NavHostController, viewModel: SharedViewModel) {
     Scaffold(
         topBar = {
             TopAppBarWithBack(
                 onBackClick = {
-
+                    navController.navigateUp()
                 },
             )
         }, backgroundColor = lightgraybg,
@@ -58,7 +56,8 @@ fun ProductDetailsScreen() {
         content = {
             Box(
                 modifier = Modifier
-                    .fillMaxSize().background(Color.White)
+                    .fillMaxSize()
+                    .background(Color.White)
                     .verticalScroll(rememberScrollState())
             ) {
                 ConstraintLayout {
@@ -71,7 +70,7 @@ fun ProductDetailsScreen() {
                             start.linkTo(parent.start)
                             end.linkTo(parent.end)
                         }) {
-                        HeaderImagesSlider()
+                        HeaderImagesSlider(viewModel)
                     }
                     Surface(
                         color = white,
@@ -94,9 +93,9 @@ fun ProductDetailsScreen() {
                                 .fillMaxSize()
                                 .padding(30.dp)
                         ) {
-                            ProductTitle()
+                            ProductTitle(viewModel)
                             Spacer(modifier = Modifier.padding(10.dp))
-                            ProductItemColorWithDesc()
+                            ProductItemColorWithDesc(viewModel)
                         }
                     }
                 }
@@ -109,7 +108,7 @@ fun ProductDetailsScreen() {
 
 
 @Composable
-fun HeaderImagesSlider() {
+fun HeaderImagesSlider(viewModel: SharedViewModel) {
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
@@ -118,7 +117,7 @@ fun HeaderImagesSlider() {
     ) {
         Image(
             contentScale = ContentScale.Fit,
-            painter = painterResource(id = R.drawable.redgear),
+            painter = painterResource(id = viewModel.selectedProduct.image),
             contentDescription = "",
             modifier = Modifier
                 .size(230.dp)
@@ -127,7 +126,7 @@ fun HeaderImagesSlider() {
 }
 
 @Composable
-fun ProductTitle() {
+fun ProductTitle(viewModel: SharedViewModel) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -146,7 +145,7 @@ fun ProductTitle() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Redgear Pro Wireless Gamepad",
+                text = viewModel.selectedProduct.name,
                 color = titleTextColor,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
@@ -161,23 +160,20 @@ fun ProductTitle() {
                                 fontWeight = FontWeight.Bold
                             )
                         ) {
-                            append("$ ")
+                            append("₹ ")
                         }
                         withStyle(
                             style = SpanStyle(
                                 titleTextColor
                             )
                         ) {
-                            append("240")
+                            append(viewModel.selectedProduct.price)
                         }
                     },
                     style = MaterialTheme.typography.subtitle1,
                     modifier = Modifier,
                     fontSize = 16.sp
-
                 )
-
-
             }
         }
     }
@@ -185,7 +181,7 @@ fun ProductTitle() {
 
 
 @Composable
-fun ProductItemColorWithDesc() {
+fun ProductItemColorWithDesc(viewModel: SharedViewModel) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(modifier = Modifier.padding(10.dp))
         Text(
@@ -195,12 +191,7 @@ fun ProductItemColorWithDesc() {
         )
         Spacer(modifier = Modifier.padding(5.dp))
         Text(
-            text = "Gamepad comes equipped with2.4GHz wireless technology and supports up to 10 metres range, an ideal choice for those looking to enjoy your favourite games without the hassle of cables and wires.\n" +
-                    "The built-in lithium-ion battery in the gamepad can provide uninterrupted gameplay for up to 2 hours in a single charge for upto 30-minute\n" +
-                    "Integrated dual intensity motor which allows a realistic gaming experience.\n" +
-                    "Integrated force feedback. Reset : When an exception occurs, such as Keys disorder, or crash, unable to connect. Remove the USB connection from the gamepad and device and reconnect.\n" +
-                    "The gamepad comes with illuminated keys on the back which light up and allow visibility even in low light conditions.\n" +
-                    "1 year warranty from the date of purchase",
+            text = viewModel.selectedProduct.details,
             color = lightblack,
             fontSize = 14.sp
         )
@@ -212,7 +203,8 @@ fun ProductItemColorWithDesc() {
 @Composable
 fun TopAppBarWithBack(onBackClick: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(30.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top

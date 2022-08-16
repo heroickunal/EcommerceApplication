@@ -35,3 +35,5 @@ val yellowColor = Color(0xfffbba01)
 
 val black = Color(0xff20262C)
 val lightblack = Color(0xff5F5F60)
+
+val redHeart = Color(0xFFFF1100)
