@@ -1,5 +1,6 @@
 package com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -264,7 +265,10 @@ fun NextButtonWithTotalItems(navController: NavHostController, viewModel: Shared
         Button(
             onClick = {
                 navController.navigate(Screen.ThankYouScreen.route)
+                viewModel.historyProducts.addAll(viewModel.cartProducts)
                 viewModel.cartProducts.clear()
+
+                Log.d("historyProducts","historyProducts size ${viewModel.historyProducts.size}")
             },
             colors = ButtonDefaults.buttonColors(backgroundColor = orange),
             modifier = Modifier

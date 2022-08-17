@@ -14,9 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.ecommerceappjetpackcompose.R
-import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.AddToCartScreen
-import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.FavoriteScreen
-import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.HomeScreen
+import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.*
 import com.example.ecommerceappjetpackcompose.dashboard_screens.viewmodel.SharedViewModel
 import com.example.ecommerceappjetpackcompose.ui.theme.orange
 
@@ -44,6 +42,7 @@ fun Dashboard(navController: NavHostController, viewModel: SharedViewModel) {
                 DashboardSection.Home -> HomeScreen(navController,viewModel)
                 DashboardSection.ShoppingCart -> AddToCartScreen(navController, viewModel)
                 DashboardSection.CartDetails -> FavoriteScreen(navController, viewModel)
+                DashboardSection.Profile -> ProfileScreen(navController)
             }
         }
     }
@@ -95,4 +94,5 @@ private enum class DashboardSection(
         R.drawable.ic_baseline_favorite_border_24,
         R.drawable.ic_baseline_favorite_border_24
     ),
+    Profile(R.drawable.ic_baseline_person_24, R.drawable.ic_baseline_person_24),
 }

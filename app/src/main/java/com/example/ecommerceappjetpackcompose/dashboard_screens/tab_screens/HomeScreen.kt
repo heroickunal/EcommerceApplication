@@ -41,11 +41,10 @@ fun HomeScreen(navController: NavHostController, viewModel: SharedViewModel) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        Column(modifier = Modifier.padding(30.dp)) {
+        Column(modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp)) {
             Products(search)
             Spacer(modifier = Modifier.padding(20.dp))
             ProductCategory()
-            Spacer(modifier = Modifier.padding(20.dp))
             ProductWidget(navController, viewModel, viewModel.productDetailsList, search)
         }
     }
@@ -126,7 +125,7 @@ fun Products(search: MutableState<String>) {
 @Composable
 fun ProductCategory() {
     val itemList = listOf("GamePads", "Sneakers", "Watch")
-    val categoryImagesList = listOf<Int>(
+    val categoryImagesList = listOf(
         R.drawable.zebmax,
         R.drawable.shoe_thumb_2,
         R.drawable.watch
@@ -170,7 +169,6 @@ fun ProductCategory() {
                 }
 
             }
-            Spacer(modifier = Modifier.width(10.dp))
         }
     }
 }
@@ -206,8 +204,8 @@ fun ProductWidget(
         cells = GridCells.Fixed(2),
         content = {
             itemsIndexed(productDetailsList.filter {
-                it.name.lowercase().contains(search.value, ignoreCase = false)
-                        || it.details.lowercase().contains(search.value, ignoreCase = false)
+                it.name.contains(search.value, ignoreCase = true)
+                        || it.details.contains(search.value, ignoreCase = true)
             }) { _, item ->
 
                 var isChecked by remember {

@@ -2,18 +2,14 @@ package com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.shape.ZeroCornerSize
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.KeyboardArrowLeft
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,9 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import com.example.ecommerceappjetpackcompose.R
+import com.example.ecommerceappjetpackcompose.dashboard_screens.navigation.Screen
 import com.example.ecommerceappjetpackcompose.dashboard_screens.viewmodel.SharedViewModel
 import com.example.ecommerceappjetpackcompose.ui.theme.*
 
@@ -39,7 +35,7 @@ fun ProductDetailsScreen(navController: NavHostController, viewModel: SharedView
 
     Scaffold(
         topBar = {
-            TopAppBarWithBack(
+            TopAppBarWithBack(viewModel = viewModel,
                 onBackClick = {
                     navController.navigateUp()
                 },
@@ -50,41 +46,58 @@ fun ProductDetailsScreen(navController: NavHostController, viewModel: SharedView
 
         content = {
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(30.dp)
-            ) {
-                Box(
+            Box(modifier = Modifier.fillMaxSize())
+            {
+                LazyColumn(
                     modifier = Modifier
-                        .height(280.dp)
+                        .fillMaxSize()
+                        .padding(30.dp)
+                        .padding(bottom = 50.dp)
                 ) {
-                    HeaderImagesSlider(viewModel)
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .height(280.dp)
+                        ) {
+                            HeaderImagesSlider(viewModel)
+                        }
+
+                        ProductTitle(viewModel)
+                        Spacer(modifier = Modifier.padding(10.dp))
+                        ProductItemColorWithDesc(viewModel)
+                    }
                 }
 
-                ProductTitle(viewModel)
-                Spacer(modifier = Modifier.padding(10.dp))
-                ProductItemColorWithDesc(viewModel)
-
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Bottom
                 ) {
 
+                    var isAddedToCart by remember {
+                        mutableStateOf(false)
+                    }
+
                     Button(modifier = Modifier.fillMaxWidth(),
                         onClick = {
+                            if (isAddedToCart) {
+                                navController.navigate(Screen.AddToCartScreen.route)
+                            } else {
+                                viewModel.cartProducts.add(viewModel.selectedProduct)
 
-                            viewModel.cartProducts.add(viewModel.selectedProduct)
+                                Toast.makeText(
+                                    context,
+                                    "Product added to cart", Toast.LENGTH_LONG
+                                ).show()
 
-                            Toast.makeText(
-                                context,
-                                "Product added to cart", Toast.LENGTH_LONG
-                            ).show()
+                            }
 
+                            isAddedToCart = true
                         }) {
 
-                        Text(text = "Add to cart")
+                        Text(text = if (isAddedToCart) "Go to cart" else "Add to cart")
                     }
                 }
             }
@@ -187,7 +200,12 @@ fun ProductItemColorWithDesc(viewModel: SharedViewModel) {
 
 
 @Composable
-fun TopAppBarWithBack(onBackClick: () -> Unit) {
+fun TopAppBarWithBack(viewModel: SharedViewModel,onBackClick: () -> Unit) {
+
+    var isChecked by remember {
+        mutableStateOf(viewModel.favoriteProducts.contains(viewModel.selectedProduct))
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -213,12 +231,28 @@ fun TopAppBarWithBack(onBackClick: () -> Unit) {
             shape = RoundedCornerShape(12.dp),
             elevation = 5.dp
         ) {
-            IconButton(onClick = { }) {
+            IconButton(onClick = {
+                isChecked = !isChecked
+
+                if (isChecked) {
+                    viewModel.favoriteProducts.add(viewModel.selectedProduct)
+                } else {
+                    viewModel.favoriteProducts.remove(viewModel.selectedProduct)
+                }
+            }) {
                 Icon(
-                    imageVector = Icons.Outlined.Favorite,
+                    painter = painterResource(
+                        id =
+                        if (isChecked) {
+                            R.drawable.ic_baseline_favorite_24
+                        } else {
+                            R.drawable.ic_baseline_favorite_border_24
+                        }
+                    ),
                     contentDescription = "",
-                    tint = orange
+                    tint = if (isChecked) redHeart else lightGrey
                 )
+
             }
 
         }

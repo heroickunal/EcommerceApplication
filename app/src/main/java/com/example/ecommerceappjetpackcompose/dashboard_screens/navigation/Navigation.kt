@@ -30,5 +30,11 @@ fun Navigation(viewModel: SharedViewModel) {
         composable(Screen.FavoriteScreen.route) {
             FavoriteScreen(navController, viewModel)
         }
+        composable(Screen.ProfileScreen.route) {
+            ProfileScreen(navController)
+        }
+        composable(Screen.OrderHistoryScreen.route) {
+            OrderHistoryScreen(navController, viewModel)
+        }
     }
 }
