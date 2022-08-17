@@ -1,5 +1,6 @@
 package com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -32,6 +34,9 @@ import com.example.ecommerceappjetpackcompose.ui.theme.*
 
 @Composable
 fun ProductDetailsScreen(navController: NavHostController, viewModel: SharedViewModel) {
+
+    val context = LocalContext.current
+
     Scaffold(
         topBar = {
             TopAppBarWithBack(
@@ -41,69 +46,50 @@ fun ProductDetailsScreen(navController: NavHostController, viewModel: SharedView
             )
         }, backgroundColor = lightgraybg,
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { },
-                backgroundColor = orange
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ShoppingCart,
-                    contentDescription = "Add To Cart",
-                    tint = white
-                )
-            }
         },
 
         content = {
-            Box(
+
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.White)
-                    .verticalScroll(rememberScrollState())
+                    .padding(30.dp)
             ) {
-                ConstraintLayout {
-                    val (imagesliderref, addtocartref) = createRefs()
-                    Box(modifier = Modifier
+                Box(
+                    modifier = Modifier
                         .height(280.dp)
-                        .constrainAs(imagesliderref) {
-                            top.linkTo(imagesliderref.top)
-                            bottom.linkTo(imagesliderref.top)
-                            start.linkTo(parent.start)
-                            end.linkTo(parent.end)
-                        }) {
-                        HeaderImagesSlider(viewModel)
-                    }
-                    Surface(
-                        color = white,
-                        shape = RoundedCornerShape(40.dp)
-                            .copy(
-                                bottomStart = ZeroCornerSize,
-                                bottomEnd = ZeroCornerSize
-                            ),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 200.dp)
-                            .constrainAs(addtocartref) {
-                                bottom.linkTo(parent.bottom)
-                                start.linkTo(parent.start)
-                                end.linkTo(parent.end)
-                            }
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(30.dp)
-                        ) {
-                            ProductTitle(viewModel)
-                            Spacer(modifier = Modifier.padding(10.dp))
-                            ProductItemColorWithDesc(viewModel)
-                        }
-                    }
+                ) {
+                    HeaderImagesSlider(viewModel)
                 }
 
+                ProductTitle(viewModel)
+                Spacer(modifier = Modifier.padding(10.dp))
+                ProductItemColorWithDesc(viewModel)
+
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+
+                    Button(modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+
+                            viewModel.cartProducts.add(viewModel.selectedProduct)
+
+                            Toast.makeText(
+                                context,
+                                "Product added to cart", Toast.LENGTH_LONG
+                            ).show()
+
+                        }) {
+
+                        Text(text = "Add to cart")
+                    }
+                }
             }
         }
     )
-
 }
 
 
@@ -167,7 +153,7 @@ fun ProductTitle(viewModel: SharedViewModel) {
                                 titleTextColor
                             )
                         ) {
-                            append(viewModel.selectedProduct.price)
+                            append(viewModel.selectedProduct.price.toString())
                         }
                     },
                     style = MaterialTheme.typography.subtitle1,
@@ -222,7 +208,6 @@ fun TopAppBarWithBack(onBackClick: () -> Unit) {
             }
 
         }
-
         Card(
             modifier = Modifier.width(50.dp),
             shape = RoundedCornerShape(12.dp),

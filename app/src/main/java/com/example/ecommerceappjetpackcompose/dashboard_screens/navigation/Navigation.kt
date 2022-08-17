@@ -4,10 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.AddToCartScreen
-import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.ProductDetailsScreen
-import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.Dashboard
-import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.ThankYouScreen
+import com.example.ecommerceappjetpackcompose.dashboard_screens.Dashboard
+import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.*
 import com.example.ecommerceappjetpackcompose.dashboard_screens.viewmodel.SharedViewModel
 
 @Composable
@@ -28,6 +26,9 @@ fun Navigation(viewModel: SharedViewModel) {
         }
         composable(Screen.ThankYouScreen.route) {
             ThankYouScreen(navController, viewModel)
+        }
+        composable(Screen.FavoriteScreen.route) {
+            FavoriteScreen(navController, viewModel)
         }
     }
 }

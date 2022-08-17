@@ -1,4 +1,4 @@
-package com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens
+package com.example.ecommerceappjetpackcompose.dashboard_screens
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.height
@@ -14,6 +14,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.ecommerceappjetpackcompose.R
+import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.AddToCartScreen
+import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.FavoriteScreen
+import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.HomeScreen
+import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.ProductDetailsScreen
 import com.example.ecommerceappjetpackcompose.dashboard_screens.viewmodel.SharedViewModel
 import com.example.ecommerceappjetpackcompose.ui.theme.orange
 
@@ -40,7 +44,7 @@ fun Dashboard(navController: NavHostController, viewModel: SharedViewModel) {
             when (section) {
                 DashboardSection.Home -> HomeScreen(navController,viewModel)
                 DashboardSection.ShoppingCart -> AddToCartScreen(navController, viewModel)
-                DashboardSection.CartDetails -> ProductDetailsScreen(navController, viewModel)
+                DashboardSection.CartDetails -> FavoriteScreen(navController, viewModel)
             }
         }
     }

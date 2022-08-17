@@ -1,13 +1,16 @@
 package com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,35 +25,45 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.ecommerceappjetpackcompose.R
 import com.example.ecommerceappjetpackcompose.dashboard_screens.navigation.Screen
 import com.example.ecommerceappjetpackcompose.dashboard_screens.viewmodel.SharedViewModel
 import com.example.ecommerceappjetpackcompose.ui.theme.*
 
 @Composable
 fun AddToCartScreen(navController: NavHostController, viewModel: SharedViewModel) {
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(30.dp)
         ) {
-            DeleteCart()
+            DeleteCart(viewModel)
             Spacer(modifier = Modifier.padding(20.dp))
-            CartItemList()
+            CartItemList(viewModel)
             Spacer(modifier = Modifier.padding(20.dp))
-            NextButtonWithTotalItems(navController)
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp),
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (viewModel.cartProducts.isNotEmpty()) {
+                NextButtonWithTotalItems(navController, viewModel)
+            }
         }
     }
 }
 
 
 @Composable
-fun DeleteCart() {
+fun DeleteCart(viewModel: SharedViewModel) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -81,7 +94,7 @@ fun DeleteCart() {
             }
         )
 
-        IconButton(onClick = { }) {
+        IconButton(onClick = { viewModel.cartProducts.clear() }) {
             Icon(
                 imageVector = Icons.Outlined.Delete,
                 contentDescription = "",
@@ -93,33 +106,33 @@ fun DeleteCart() {
 }
 
 @Composable
-fun CartItemList() {
+fun CartItemList(viewModel: SharedViewModel) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(40.dp)
     ) {
-        ProductCartItems(
-            imagePainter = painterResource(id = R.drawable.redgear),
-            title = "Redgear Pro Wireless Gamepad",
-            price = "1299.00",
-            count = "x2",
-            backgroundColor = lightsilverbox
-        )
-        ProductCartItems(
-            imagePainter = painterResource(id = R.drawable.zebmax),
-            title = "Zeb-MAX",
-            price = "1070.00",
-            count = "x1",
-            backgroundColor = lightsilverbox
-        )
-        ProductCartItems(
-            imagePainter = painterResource(id = R.drawable.cosmic),
-            title = "Cosmic Byte C1070T",
-            price = "1419.00",
-            count = "x3",
-            backgroundColor = lightsilverbox
-        )
+        if (viewModel.cartProducts.isEmpty()) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = "No products added to cart!")
+            }
+        }
 
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            itemsIndexed(viewModel.cartProducts.distinct()) { _, item ->
+
+                ProductCartItems(
+                    imagePainter = painterResource(id = item.image),
+                    title = item.name,
+                    price = item.price.toString(),
+                    count = viewModel.cartProducts.count { item.name == it.name },
+                    backgroundColor = lightsilverbox
+                )
+            }
+        }
     }
 }
 
@@ -128,7 +141,7 @@ fun ProductCartItems(
     imagePainter: Painter,
     title: String = "",
     price: String = "",
-    count: String = "",
+    count: Int,
     backgroundColor: Color = Color.Transparent
 ) {
     Row(
@@ -202,7 +215,7 @@ fun ProductCartItems(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = count,
+                        text = "X$count",
                         fontSize = 14.sp,
                         color = titleTextColor
                     )
@@ -214,7 +227,7 @@ fun ProductCartItems(
 }
 
 @Composable
-fun NextButtonWithTotalItems(navController: NavHostController) {
+fun NextButtonWithTotalItems(navController: NavHostController, viewModel: SharedViewModel) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Divider(color = lightGrey, thickness = 2.dp)
         Spacer(modifier = Modifier.padding(8.dp))
@@ -224,13 +237,24 @@ fun NextButtonWithTotalItems(navController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "3 Items",
+                text = "${viewModel.cartProducts.size} Items",
                 fontSize = 14.sp,
                 color = lightGrey
             )
 
+            var finalPrice by remember {
+                mutableStateOf(0)
+            }
+
+            LaunchedEffect(key1 = viewModel.cartProducts.size, block = {
+                finalPrice = 0
+                viewModel.cartProducts.map {
+                    finalPrice += it.price
+                }
+            })
+
             Text(
-                text = "₹15,261.00",
+                text = "₹$finalPrice",
                 fontSize = 18.sp,
                 color = titleTextColor,
                 fontWeight = FontWeight.Bold
@@ -240,6 +264,7 @@ fun NextButtonWithTotalItems(navController: NavHostController) {
         Button(
             onClick = {
                 navController.navigate(Screen.ThankYouScreen.route)
+                viewModel.cartProducts.clear()
             },
             colors = ButtonDefaults.buttonColors(backgroundColor = orange),
             modifier = Modifier

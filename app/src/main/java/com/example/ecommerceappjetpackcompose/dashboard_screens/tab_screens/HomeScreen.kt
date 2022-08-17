@@ -34,16 +34,19 @@ import com.example.ecommerceappjetpackcompose.ui.theme.*
 
 @Composable
 fun HomeScreen(navController: NavHostController, viewModel: SharedViewModel) {
+
+    val search = remember { mutableStateOf("") }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
         Column(modifier = Modifier.padding(30.dp)) {
-            Products()
+            Products(search)
             Spacer(modifier = Modifier.padding(20.dp))
             ProductCategory()
             Spacer(modifier = Modifier.padding(20.dp))
-            ProductWidget(navController, viewModel)
+            ProductWidget(navController, viewModel, viewModel.productDetailsList, search)
         }
     }
 
@@ -51,8 +54,7 @@ fun HomeScreen(navController: NavHostController, viewModel: SharedViewModel) {
 }
 
 @Composable
-fun Products() {
-    var search by remember { mutableStateOf("") }
+fun Products(search: MutableState<String>) {
 
     Column(
         modifier = Modifier
@@ -90,21 +92,19 @@ fun Products() {
             horizontalArrangement = Arrangement.Start,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(78.dp)
                 .padding(top = 30.dp)
         ) {
             TextField(
-                modifier = Modifier
-                    .weight(0.85f),
+                modifier = Modifier,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = lightbox,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                 ),
-                value = search,
+                value = search.value,
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true,
-                onValueChange = { search = it },
+                onValueChange = { search.value = it },
                 placeholder = {
                     Text(
                         text = "Search Products",
@@ -198,57 +198,40 @@ fun ProductCategory() {
 data class ProductDetails(
     val name: String,
     val details: String,
-    val price: String,
+    val price: Int,
     val image: Int,
     val trending: String
 )
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProductWidget(navController: NavHostController, viewModel: SharedViewModel) {
+fun ProductWidget(
+    navController: NavHostController,
+    viewModel: SharedViewModel,
+    productDetailsList: List<ProductDetails>,
+    search: MutableState<String>
+) {
 
-    val productDetails = listOf<ProductDetails>(
-        ProductDetails(
-            name = "Zeb-MAX",
-            details = "ZEBRONICS Zeb-MAX Play Windows Compatible 2.4GHz Wireless Gamepad with 10H* Backup, Turbo Mode, Dual Vibration Motors, Quad Front triggers, Type C Rechargeable and Plug & Play Setup",
-            price = "1070",
-            image = R.drawable.zebmax,
-            trending = "Trending Now"
-        ),
-        ProductDetails(
-            name = "Redgear Pro Wireless",
-            details = "Redgear Pro Wireless Gamepad with 2.4GHz Wireless Technology, Integrated Dual Intensity Motor, Illuminated Keys for PC(Compatible with Windows 7/8/8.1/10 only)",
-            price = "1299",
-            image = R.drawable.redgear,
-            trending = "Best Selling"
-        ),
-        ProductDetails(
-            name = "Cosmic Byte C1070T",
-            details = "ZEBRONICS Zeb-MAX Play Windows Compatible 2.4GHz Wireless Gamepad with 10H* Backup, Turbo Mode, Dual Vibration Motors, Quad Front triggers, Type C Rechargeable and Plug & Play Setup",
-            price = "1419",
-            image = R.drawable.cosmic,
-            trending = "Best Selling"
-        ),
-        ProductDetails(
-            name = "RPM Euro Games",
-            details = "Eccentric 360 and #x2DA\n" +
-                    "Double triggers and analog bumpers, 1 Year Warranty\n" +
-                    "analog sticks for more comfort,Ultra-precise eight-way D Cross\n" +
-                    "Integrated Dual Mode: X-input and Direct-input for greater games compatibility\n" +
-                    "Dongle should be directly in sight of controller",
-            price = "898",
-            image = R.drawable.rpm,
-            trending = "Trending Now"
-        )
-    )
+    if (productDetailsList.isEmpty()) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(text = "No favorite products!")
+        }
+    }
 
     LazyVerticalGrid(
         cells = GridCells.Fixed(2),
         content = {
-            itemsIndexed(productDetails) { _, item ->
+            itemsIndexed(productDetailsList.filter {
+                it.name.lowercase().contains(search.value, ignoreCase = false)
+                        || it.details.lowercase().contains(search.value, ignoreCase = false)
+            }) { _, item ->
 
                 var isChecked by remember {
-                    mutableStateOf(false)
+                    mutableStateOf(viewModel.favoriteProducts.contains(item))
                 }
 
                 Card(
@@ -256,7 +239,8 @@ fun ProductWidget(navController: NavHostController, viewModel: SharedViewModel) 
                         .padding(8.dp)
                         .clickable {
                             viewModel.selectedProduct = item
-                            navController.navigate(Screen.ProductDetailsScreen.route) }
+                            navController.navigate(Screen.ProductDetailsScreen.route)
+                        }
                         .wrapContentHeight(),
                     shape = RoundedCornerShape(24.dp),
                     elevation = 2.dp
@@ -268,14 +252,23 @@ fun ProductWidget(navController: NavHostController, viewModel: SharedViewModel) 
                             .wrapContentHeight()
                             .padding(12.dp)
                     ) {
-                        IconButton(onClick = { isChecked = !isChecked }) {
+                        IconButton(onClick = {
+                            isChecked = !isChecked
+
+                            if (isChecked) {
+                                viewModel.favoriteProducts.add(item)
+                            } else {
+                                viewModel.favoriteProducts.remove(item)
+                            }
+                        }) {
                             Icon(
                                 painter = painterResource(
                                     id =
-                                    if (isChecked)
+                                    if (isChecked) {
                                         R.drawable.ic_baseline_favorite_24
-                                    else
+                                    } else {
                                         R.drawable.ic_baseline_favorite_border_24
+                                    }
                                 ),
                                 contentDescription = "",
                                 tint = if (isChecked) redHeart else lightGrey
@@ -337,7 +330,7 @@ fun ProductWidget(navController: NavHostController, viewModel: SharedViewModel) 
                                             titleTextColor
                                         )
                                     ) {
-                                        append(item.price)
+                                        append(item.price.toString())
                                     }
                                 },
                                 style = MaterialTheme.typography.subtitle1,
