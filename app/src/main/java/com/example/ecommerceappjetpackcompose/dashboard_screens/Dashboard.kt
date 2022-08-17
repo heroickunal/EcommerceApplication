@@ -17,7 +17,6 @@ import com.example.ecommerceappjetpackcompose.R
 import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.AddToCartScreen
 import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.FavoriteScreen
 import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.HomeScreen
-import com.example.ecommerceappjetpackcompose.dashboard_screens.tab_screens.ProductDetailsScreen
 import com.example.ecommerceappjetpackcompose.dashboard_screens.viewmodel.SharedViewModel
 import com.example.ecommerceappjetpackcompose.ui.theme.orange
 

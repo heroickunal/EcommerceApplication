@@ -95,7 +95,7 @@ fun Products(search: MutableState<String>) {
                 .padding(top = 30.dp)
         ) {
             TextField(
-                modifier = Modifier,
+                modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = lightbox,
                     focusedIndicatorColor = Color.Transparent,
@@ -119,27 +119,7 @@ fun Products(search: MutableState<String>) {
                     )
                 },
             )
-            Spacer(modifier = Modifier.width(5.dp))
-            Card(
-                modifier = Modifier
-                    .width(60.dp)
-                    .padding(start = 16.dp)
-                    .clickable { },
-                elevation = 5.dp,
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                IconButton(onClick = { }) {
-                    Icon(
-                        painter = painterResource(R.drawable.filter_list),
-                        contentDescription = "Filter Icon",
-                        modifier = Modifier.size(20.dp, 20.dp)
-                    )
-
-                }
-            }
-
         }
-
     }
 }
 
